@@ -314,6 +314,50 @@ public:
         while (k<n);
         return color;
     }
+    std::vector<int> find_gamiltione_route(){
+        std::vector<std::vector<int>> que_route;
+        std::vector<Node*> que_nodes;
+        std::vector<std::vector<bool>> que_was;
+        //выбран худший алгоритм, но пусть будет. Будем искать гамильтоновы пути обходом в ширину(да простит меня ассимптотика)
+        //добавляем стартовую вершину, с путем, где отмечено, что посещена нулевая вершина
+        que_route.emplace_back();
+        que_route[0].push_back(0);
+        que_nodes.push_back(vertex[0]);
+        que_was.emplace_back();
+        que_was[0].resize(n);
+        que_was[0][0] = true;
+        std::vector<int> answer;
+        while (!que_nodes.empty() && answer.empty()){
+            Node* cur_node = que_nodes[0];
+            for (int i = 0; i < cur_node->get_number_childs() && answer.empty(); i++){
+                //если потомок не посещён
+                int value_child = cur_node->check_child(i).get_value();
+                if (que_was[0][value_child] == false){
+                    //добавляем его в очередь
+                    que_nodes.push_back(vertex[value_child]);
+                    std::vector<int> temp_route = que_route[0];
+                    temp_route.push_back(value_child);
+                    //добавляем в очередь с маршрутами наш маршрут, в который добавили нашего потомка
+                    que_route.push_back(temp_route);
+                    //копируем и отмечаем, что посетили вершину
+                    std::vector<bool> temp_was = que_was[0];
+                    temp_was[value_child] = true;
+                    que_was.push_back(temp_was);
+                    //пересчитываем последний не посещённый, если посетили последнюю не посещённую вершину
+                }
+                //потомок является стартовой вершиной и мы посетили все вершины
+                else if (value_child == 0 && que_route[0].size() == n){
+                    answer = que_route[0];
+                    answer.push_back(0);
+                }
+            }
+            //удаляем пройденную вершину
+            que_was.erase(que_was.begin());
+            que_route.erase(que_route.begin());
+            que_nodes.erase(que_nodes.begin());
+        }
+        return answer;
+    }
 };
 
 class Bi_Graph{

@@ -39,4 +39,12 @@ int main() {
     std::cout << "Максимальный поток: " << graph2.max_flow_problem(0, 9) << '\n';
     answer = graph.colorized();
     for (int i = 0; i < answer.size(); i++) std::cout  << i+1 << " Вершина раскрашена в цвет " << answer[i] << '\n';
+    std::vector<int> gamiltone_route = graph.find_gamiltione_route();
+    if (gamiltone_route.empty()){
+        std::cout << "Гамильтонов путь не существует в этом графе. ";
+    }
+    else {
+        std::cout << "Гамильтонов путь: ";
+        for (int i = 0; i < gamiltone_route.size(); i++) std::cout << gamiltone_route[i] << ' ';
+    }
 }
