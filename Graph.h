@@ -254,6 +254,66 @@ public:
             return sum;
         }
     }
+    //работает корректно с графами без фиктивных связей
+    std::vector<int> colorized(){
+        //создаём вектор, в котором будем хранить раскраску
+        std::vector<int> color;
+        //заполняем его -1, чтобы показать, что вершины не закрашены
+        color.resize(n, -1);
+        //количество цветов на данный момент
+        int number_colors = 0;
+        //создаём очередь на обход в ширину
+        std::vector<Node*> que;
+        int k;
+        do {
+            //отправляем туда первую нераскрашенную вершину
+             k = std::find(color.begin(), color.end(), -1) - color.begin();
+             //если вершина нашлась
+             if (k < n){
+                 //добавляем её в очередь
+                 que.push_back(vertex[k]);
+                 //пока очередь не пуста
+                 while (!que.empty()){
+                     //берём первую вершину в очереди
+                     Node* cur = que[0];
+                     //создаём вектор, в котором будем записывать, соседствует ли вершина с раскрашенной
+                     std::vector<bool> was;
+                     //его размер - это количество существующих цветов
+                     was.resize(number_colors);
+                     //проходим всех потомков
+                     int last_unused_color = 0;
+                     for (int j = 0; last_unused_color < number_colors && j < cur->get_number_childs() && last_unused_color < number_colors; j++){
+                         //если вершина раскрашена, то смотрим где она находится относительно последнего неиспользованного цвета
+                         int color_cur_child = color[cur->check_child(j).get_value()];
+                         //если она последний неиспользованный цвет, то обновляем его
+                         if (color_cur_child != -1 &&  color_cur_child == last_unused_color) {
+                             was[color[cur->check_child(j).get_value()]] = true;
+                             last_unused_color = std::find(was.begin() + last_unused_color, was.end(), false) - was.begin();
+                         }
+                         //если нет, то просто записываем, что такой цвет был
+                         else if (color_cur_child != -1 &&  color_cur_child > last_unused_color){
+                             was[color[cur->check_child(j).get_value()]] = true;
+                         }
+                         //если вершина не раскрашена, то добавляем в очередь
+                         else if (color[cur->check_child(j).get_value()] == -1) que.push_back(&(cur->get_child(j)));
+                     }
+                     //если такой есть, то им красим
+                     if (last_unused_color < number_colors){
+                         color[cur->get_value()] = last_unused_color;
+                     }
+                     //если нет, то создаём новый
+                     else{
+                         color[cur->get_value()] = number_colors;
+                         number_colors++;
+                     }
+                     //убираем вершину с очереди
+                     que.erase(que.begin());
+                 }
+             }
+        }
+        while (k<n);
+        return color;
+    }
 };
 
 class Bi_Graph{

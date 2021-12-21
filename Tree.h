@@ -1,4 +1,4 @@
-//
+    //
 // Created by MRV on 18.12.2021.
 //
 
@@ -69,6 +69,7 @@ public:
     ~Tree(){
         clear();
     }
+
 };
 
 
